@@ -119,25 +119,11 @@ export class FastestValidatorConverter implements IConverter {
         const clonedRule: ValidationRule = typeof pRule === 'object' ? (Array.isArray(pRule) ? [...pRule] : { ...pRule }) : pRule;
 
         //extract known params extensions
-        const extensions: Array<[string, EOASchemaExtensionsValueTypes]> =
-            Array.isArray(clonedRule) || typeof clonedRule !== 'object' || !clonedRule.$$oa
-                ? []
-                : (
-                      [
-                          {
-                              property: 'description',
-                              extension: EOAExtensions.description
-                          },
-                          {
-                              property: 'summary',
-                              extension: EOAExtensions.summary
-                          },
-                          {
-                              property: 'deprecated',
-                              extension: EOAExtensions.deprecated
-                          }
-                      ] as Array<{ property: keyof FVOARuleMetaKeys; extension: EOAExtensionsValues }>
-                  ).map(({ property, extension }) => [extension, clonedRule.$$oa?.[property]]);
+        const oaMetas = (!Array.isArray(clonedRule) && typeof clonedRule === 'object' && clonedRule.$$oa) || {};
+        const extensions: Array<[string, any]> = Object.entries(oaMetas).map(([property, value]) => {
+            const extension = EOAExtensions[property as keyof typeof EOAExtensions] || property;
+            return [extension, value];
+        });
 
         const baseRule = this.validator.getRuleFromSchema(clonedRule)?.schema as ValidationRuleObject;
         const rule = {

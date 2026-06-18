@@ -594,17 +594,25 @@ export class OpenApiGenerator {
     ): OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject {
         const systemParams: tSystemParams = this.extractSystemParams(rule as Record<string, unknown>);
 
-        rule.description = systemParams.description;
-        rule.title = systemParams.summary;
-        rule.deprecated = systemParams.deprecated;
+        if (systemParams.description !== undefined) {
+            rule.description = systemParams.description;
+        }
+        if (systemParams.summary !== undefined) {
+            rule.title = systemParams.summary;
+        }
+        if (systemParams.deprecated !== undefined) {
+            rule.deprecated = systemParams.deprecated;
+        }
 
         if (rule.type == 'object' && rule.properties) {
             // create child schema per object
+            const { properties, type, default: _default, examples, ...rest } = rule;
             return {
+                ...rest,
                 summary: rule.title,
                 deprecated: rule.deprecated,
                 description: rule.description,
-                ...this._createSchemaComponentFromObject(nextSchemeName, rule.properties, { default: rule.default })
+                ...this._createSchemaComponentFromObject(nextSchemeName, properties, { default: _default })
             };
         }
 

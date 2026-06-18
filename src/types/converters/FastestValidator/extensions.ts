@@ -18,6 +18,7 @@ export interface FVOASchemaMetaKeys {
     description?: string;
     // allow to set the summary of the requestBody
     summary?: string;
+    [key: string]: any;
 }
 
 /**
@@ -49,4 +50,16 @@ export interface FVOARuleMetaKeys {
     deprecated?: boolean;
     // allow to set a non-optional field on multipart/stream action
     optional?: boolean;
+
+    // Suggested keys from OpenAPI
+    default?: any;
+    title?: string;
+    example?: any;
+    examples?: any[];
+    format?: string;
+    readOnly?: boolean;
+    writeOnly?: boolean;
+    pattern?: string;
+
+    [key: string]: any;
 }
